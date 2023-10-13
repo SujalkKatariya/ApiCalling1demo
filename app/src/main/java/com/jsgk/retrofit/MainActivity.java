@@ -2,8 +2,8 @@ package com.jsgk.retrofit;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.net.Uri;
 import android.os.Bundle;
+import android.service.autofill.UserData;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -12,17 +12,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.http.GET;
-import retrofit2.http.Path;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,12 +28,8 @@ public class MainActivity extends AppCompatActivity {
     Button btn1;
     ImageView avatar;
 
-    interface RequestUserdata{
-        @GET("/api/users/{uid}")
-        Call<UserModel> getuser(@Path("uid") String uid);
 
 
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,42 +42,35 @@ public class MainActivity extends AppCompatActivity {
         txtLastname=findViewById(R.id.txtlastname);
 
 
-        btn1.setOnClickListener(new View.OnClickListener() {
+        RetrofitInstance.getInstance().apigetrequest.getUsers().enqueue(new Callback<usermodal>() {
             @Override
-            public void onClick(View v) {
+            public void onResponse(Call<usermodal> call, Response<usermodal> response) {
+                if (response.isSuccessful()) {
+                    usermodal userModal = response.body();
+                    List<usermodal.Data> users = userModal.getData();
 
-                if (!edtText1.getText().toString().isEmpty()) {
-                    Retrofit retrofit = new Retrofit.Builder()
-                            .baseUrl("https://reqres.in/")
-                            .addConverterFactory(GsonConverterFactory.create())
-                            .build();
 
-                    RequestUserdata requestUserdata = retrofit.create(RequestUserdata.class);
-                    requestUserdata.getuser(edtText1.getText().toString()).enqueue(new Callback<UserModel>() {
-                        @Override
-                        public void onResponse(Call<UserModel> call, Response<UserModel> response) {
-                            textview.setText(Objects.requireNonNull(response.body()).getData().getFirst_name());
-                            txtLastname.setText(response.body().getData().getLast_name());
-                            String img = response.body().getData().getAvatar();
-                            Uri imguri = Uri.parse(img);
-                            Glide.with(getApplicationContext())
-                                    .load(imguri)
-                                    .into(avatar);
-                        }
-
-                        @Override
-                        public void onFailure(Call<UserModel> call, Throwable t) {
-                            textview.setText(t.getMessage());
-                        }
-                    });
-
-            }else{
-                    Toast.makeText(MainActivity.this, "Enter a Uid please", Toast.LENGTH_SHORT).show();
+                    for (usermodal.Data user : users) {
+                        Log.i("TAG", "First Name: " + user.getFirst_name());
+                        Log.i("TAG", "Last Name: " + user.getLast_name());
+                        Log.i("TAG", "Email: " + user.getEmail());
+                        Log.i("TAG", "Avatar: " + user.getAvatar());
+                    }
+                } else {
+                    // Handle the error or display a message if the request is not successful
+                    Log.e("TAG", "Request failed with code: " + response.code());
                 }
+            }
 
-
+            @Override
+            public void onFailure(Call<usermodal> call, Throwable t) {
+                // Handle the failure of the request
+                t.printStackTrace();
             }
         });
 
+
+
     }
+
 }

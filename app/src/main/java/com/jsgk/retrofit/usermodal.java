@@ -3,18 +3,59 @@ package com.jsgk.retrofit;
 import java.io.Serializable;
 import java.lang.Integer;
 import java.lang.String;
+import java.util.List;
 
-public class UserModel implements Serializable {
-  private Data data;
+public class usermodal implements Serializable {
+  private Integer per_page;
+
+  private Integer total;
+
+  private List<Data> data;
+
+  private Integer page;
+
+  private Integer total_pages;
 
   private Support support;
 
-  public Data getData() {
+  public Integer getPer_page() {
+    return this.per_page;
+  }
+
+  public void setPer_page(Integer per_page) {
+    this.per_page = per_page;
+  }
+
+  public Integer getTotal() {
+    return this.total;
+  }
+
+  public void setTotal(Integer total) {
+    this.total = total;
+  }
+
+  public List<Data> getData() {
     return this.data;
   }
 
-  public void setData(Data data) {
+  public void setData(List<Data> data) {
     this.data = data;
+  }
+
+  public Integer getPage() {
+    return this.page;
+  }
+
+  public void setPage(Integer page) {
+    this.page = page;
+  }
+
+  public Integer getTotal_pages() {
+    return this.total_pages;
+  }
+
+  public void setTotal_pages(Integer total_pages) {
+    this.total_pages = total_pages;
   }
 
   public Support getSupport() {
